@@ -79,10 +79,32 @@ typedef struct
 	volatile uint32_t ODR;			/* GPIO port output data register, address offset 0x14 					*/
 	volatile uint32_t BSRR;			/* GPIO port bit set/reset register, address offset 0x18				*/
 	volatile uint32_t LCKR;			/* GPIO port configuration lock register, address offset 0x1C			*/
-	volatile uint32_t AFR[2];		/* AFR[0] GPIO alternate function low register, address offset 0x20	*/
+	volatile uint32_t AFR[2];		/* AFR[0] GPIO alternate function low register, address offset 0x20		*/
 									/* AFR[1] GPIO alternate function high register, address offset 0x24	*/
-
 } GPIO_RegDef_t;
+
+/*****peripheral register definition structure for EXTI*****/
+typedef struct
+{
+	volatile uint32_t IMR;			/* Interrupt mask register, Address offset 0x00							*/
+	volatile uint32_t EMR;			/* Event mask register, Address offset 0x04								*/
+	volatile uint32_t RTSR;			/* Rising edge trigger register, Address offset 0x08					*/
+	volatile uint32_t FTSR;			/* Falling edge trigger register, Address offset 0x0C					*/
+	volatile uint32_t SWIER;		/* Software interrupt register, Address offset 0x10						*/
+	volatile uint32_t PR;			/* Interrupt pending register, Address offset 0x14						*/
+} EXTI_RegDef_t;
+
+/*****peripheral register definition structure for SYSCFG*****/
+typedef struct
+{
+    volatile uint32_t MEMRMP;		/* Memory remap register, Address offset: 0x00							*/
+    volatile uint32_t PMC;			/* Peripheral mode configuration register, Address offset: 0x04			*/
+    volatile uint32_t EXTICR[4];	/* EXTI configuration registers 1-4, Address offset: 0x08-0x14			*/
+    volatile uint32_t RESERVED1[2];	/* Reserved, Address offset: 0x18-0x1C									*/
+    volatile uint32_t CMPCR;		/* Compensation cell control register, Address offset: 0x20				*/
+    volatile uint32_t RESERVED2[2];	/* Reserved, Address offset: 0x24-0x28									*/
+    volatile uint32_t CFGR;			/* Configuration register, Address offset: 0x2C							*/
+} SYSCFG_RegDef_t;
 
 /*****peripheral register definition structure for RCC*****/
 typedef struct
@@ -140,6 +162,10 @@ typedef struct
 #define GPIOH ((GPIO_RegDef_t*) GPIOH_BASEADDR)
 
 #define RCC ((RCC_RegDef_t*) RCC_BASEADDR)
+
+#define EXTI ((EXTI_RegDef_t*) EXTI_BASEADDR)
+
+#define SYSCFG ((SYSCFG_RegDef_t*)SYSCFG_BASEADDR)
 
 /*
  * Clock Enable Macros for GPIOx peripherals
@@ -229,14 +255,34 @@ typedef struct
 /*
  * Macros to reset GPIOx peripheral
  */
-#define GPIOA_REG_RESET()		do { (RCC->AHB1RSTR |= (1 << 0)); (RCC->AHB1RSTR &= ~(1 << 0)); } while (0)
-#define GPIOB_REG_RESET()		do { (RCC->AHB1RSTR |= (1 << 1)); (RCC->AHB1RSTR &= ~(1 << 1)); } while (0)
-#define GPIOC_REG_RESET()		do { (RCC->AHB1RSTR |= (1 << 2)); (RCC->AHB1RSTR &= ~(1 << 2)); } while (0)
-#define GPIOD_REG_RESET()		do { (RCC->AHB1RSTR |= (1 << 3)); (RCC->AHB1RSTR &= ~(1 << 3)); } while (0)
-#define GPIOE_REG_RESET()		do { (RCC->AHB1RSTR |= (1 << 4)); (RCC->AHB1RSTR &= ~(1 << 4)); } while (0)
-#define GPIOF_REG_RESET()		do { (RCC->AHB1RSTR |= (1 << 5)); (RCC->AHB1RSTR &= ~(1 << 5)); } while (0)
-#define GPIOG_REG_RESET()		do { (RCC->AHB1RSTR |= (1 << 6)); (RCC->AHB1RSTR &= ~(1 << 6)); } while (0)
-#define GPIOH_REG_RESET()		do { (RCC->AHB1RSTR |= (1 << 7)); (RCC->AHB1RSTR &= ~(1 << 7)); } while (0)
+#define GPIOA_REG_RESET()		do { (RCC->AHB1RSTR |= (1U << 0)); (RCC->AHB1RSTR &= ~(1U << 0)); } while (0)
+#define GPIOB_REG_RESET()		do { (RCC->AHB1RSTR |= (1U << 1)); (RCC->AHB1RSTR &= ~(1U << 1)); } while (0)
+#define GPIOC_REG_RESET()		do { (RCC->AHB1RSTR |= (1U << 2)); (RCC->AHB1RSTR &= ~(1U << 2)); } while (0)
+#define GPIOD_REG_RESET()		do { (RCC->AHB1RSTR |= (1U << 3)); (RCC->AHB1RSTR &= ~(1U << 3)); } while (0)
+#define GPIOE_REG_RESET()		do { (RCC->AHB1RSTR |= (1U << 4)); (RCC->AHB1RSTR &= ~(1U << 4)); } while (0)
+#define GPIOF_REG_RESET()		do { (RCC->AHB1RSTR |= (1U << 5)); (RCC->AHB1RSTR &= ~(1U << 5)); } while (0)
+#define GPIOG_REG_RESET()		do { (RCC->AHB1RSTR |= (1U << 6)); (RCC->AHB1RSTR &= ~(1U << 6)); } while (0)
+#define GPIOH_REG_RESET()		do { (RCC->AHB1RSTR |= (1U << 7)); (RCC->AHB1RSTR &= ~(1U << 7)); } while (0)
+
+#define GPIOA_BASEADDR_TO_CODE(x)  ((x == GPIOA) ? 0 :\
+									(x == GPIOB) ? 1 :\
+									(x == GPIOC) ? 2 :\
+									(x == GPIOD) ? 3 :\
+									(x == GPIOE) ? 4 :\
+									(x == GPIOF) ? 5 :\
+									(x == GPIOG) ? 6 :\
+									(x == GPIOH) ? 7 : 0)
+
+/*
+ * IRQ Numbers (STM32f446xx)
+ */
+#define IRQ_NO_EXTI0		6U
+#define IRQ_NO_EXTI1		7U
+#define IRQ_NO_EXTI2		8U
+#define IRQ_NO_EXTI3		9U
+#define IRQ_NO_EXTI4		10U
+#define IRQ_NO_EXTI9_5		23U
+#define IRQ_NO_EXTI15_10	40U
 
 // some generic macros
 #define ENABLE			1

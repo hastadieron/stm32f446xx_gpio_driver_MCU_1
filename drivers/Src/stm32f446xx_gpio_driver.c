@@ -87,7 +87,37 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle) {
 		temp = 0;
 
 	} else {
-		//TODO later (interrupt mode)
+		// interrupt mode
+		if (pGPIOHandle->GPIO_Pin_Config.GPIO_PinMode == GPIO_MODE_IT_FT)
+		{
+			// 1. Configure  Falling trigger selection register (EXTI_FTSR)
+			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber);
+			// Clear the corresponding RTSR bit
+			EXTI->RTSR &= ~(1 << pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber);
+
+		} else if (pGPIOHandle->GPIO_Pin_Config.GPIO_PinMode == GPIO_MODE_IT_RT)
+		{
+			// 1. Configure  Rising trigger selection register (EXTI_FTSR)
+			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber);
+			// Clear the corresponding FTSR bit
+			EXTI->FTSR &= ~(1 << pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber);
+
+		} else if (pGPIOHandle->GPIO_Pin_Config.GPIO_PinMode == GPIO_MODE_IT_RFT)
+		{
+			// 1. Configure both EXTI_FTSR and EXTI_FTSR
+			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber);
+			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber);
+		}
+
+		// 2. Configure the GPIO port selection in SYSCFG_EXTICR
+		uint8_t temp1 = pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber / 4;
+		uint8_t temp2 = pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber % 4;
+		uint8_t portcode = GPIOA_BASEADDR_TO_CODE(pGPIOHandle->pGPIOx);
+		SYSCFG_PCLK_EN();
+		SYSCFG->EXTICR[temp1] = portcode << (temp2 * 4);
+
+		// 3. Enable the EXTI interrupt delivery using IMR
+		EXTI->IMR |= (1 << pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber);
 	}
 	temp = 0;
 
@@ -278,7 +308,10 @@ void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
  *
  * @note			-
  */
-void IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi);
+void IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi)
+{
+
+}
 
 
 /**************************************************************************************
