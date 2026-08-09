@@ -296,23 +296,37 @@ void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
 
 
 /**************************************************************************************
- * @fn				-
+ * @fn				- IRQConfig
  *
- * @brief			-
+ * @brief			- Configures IRQ number in NVIC: enable/disable and priority
  *
- * @param[in]		-
- * @param[in]		-
- * @param[in]		-
+ * @param[in]		- IRQNumber  : IRQ position number from vector table (RM0390 Table 38)
+ * @param[in]		- IRQPriority: Priority level 0-15 (0 = highest, 15 = lowest)
+ * @param[in]		- EnorDi     : ENABLE or DISABLE
  *
- * @return			-
+ * @return			- none
  *
- * @note			-
+ * @note			- Processor-side configuration (ARM Cortex-M4 NVIC registers)
+ *                	  STM32F446xx implements 4 priority bits in upper nibble of IPR byte
  */
 void IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi)
 {
-
+    /* --- Enable / Disable --- */
+    if (EnorDi == ENABLE)
+    {
+        if      (IRQNumber <= 31)  *NVIC_ISER0 |= (1U << (IRQNumber % 32));
+        else if (IRQNumber <= 63)  *NVIC_ISER1 |= (1U << (IRQNumber % 32));
+        else if (IRQNumber <= 95)  *NVIC_ISER2 |= (1U << (IRQNumber % 32));
+        else                       *NVIC_ISER3 |= (1U << (IRQNumber % 32));
+    }
+    else
+    {
+        if      (IRQNumber <= 31)  *NVIC_ICER0 |= (1U << (IRQNumber % 32));
+        else if (IRQNumber <= 63)  *NVIC_ICER1 |= (1U << (IRQNumber % 32));
+        else if (IRQNumber <= 95)  *NVIC_ICER2 |= (1U << (IRQNumber % 32));
+        else                       *NVIC_ICER3 |= (1U << (IRQNumber % 32));
+    }
 }
-
 
 /**************************************************************************************
  * @fn				-
@@ -327,4 +341,4 @@ void IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi)
  *
  * @note			-
  */
-void IRQHandling(uint8_t PinNumber);
+void GPIO_IRQHandling(uint8_t PinNumber);
