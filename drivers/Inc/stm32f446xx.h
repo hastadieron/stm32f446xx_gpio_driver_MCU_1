@@ -26,6 +26,13 @@
 #define NVIC_ICER3 ((volatile uint32_t*)0XE000E18C)
 
 /*
+ * ARM Cortex Mx Processor NVIC Interrupt Priority register addresses
+ */
+#define NVIC_PR_BASE_ADDR ((volatile uint32_t*)0xE000E400)
+
+#define NO_PR_BITS_IMPLEMENTED			4
+
+/*
  * Base addresses of Flash and SRAM memory
  */
 
@@ -302,6 +309,26 @@ typedef struct
 #define IRQ_NO_EXTI4		10U
 #define IRQ_NO_EXTI9_5		23U
 #define IRQ_NO_EXTI15_10	40U
+
+/*
+ * macros for all the possible priority levels
+ */
+#define NVIC_IRQ_PRI0		0U
+#define NVIC_IRQ_PRI1		1U
+#define NVIC_IRQ_PRI2		2U
+#define NVIC_IRQ_PRI3		3U
+#define NVIC_IRQ_PRI4		4U
+#define NVIC_IRQ_PRI5		5U
+#define NVIC_IRQ_PRI6		6U
+#define NVIC_IRQ_PRI7		7U
+#define NVIC_IRQ_PRI8		8U
+#define NVIC_IRQ_PRI9		9U
+#define NVIC_IRQ_PRI10		10U
+#define NVIC_IRQ_PRI11		11U
+#define NVIC_IRQ_PRI12		12U
+#define NVIC_IRQ_PRI13		13U
+#define NVIC_IRQ_PRI14		14U
+#define NVIC_IRQ_PRI15		15U
 
 // some generic macros
 #define ENABLE			1
