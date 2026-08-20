@@ -12,7 +12,7 @@
  * @param[in]		- pGPIOx : Pointer to the GPIO peripheral register structure
  * @param[in]		- EnorDi : ENABLE or DISABLE
  *
- * @return			- none
+ * @return			- None
  *
  * @note			- The GPIO peripheral clock must be enabled before accessing the GPIO registers
  */
@@ -64,7 +64,7 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi) {
  * @param[in]		- pGPIOHandle : Pointer to the GPIO handle structure containing
  * 									the GPIO port and pin configuration
  *
- * @return			- none
+ * @return			- None
  *
  * @note			- Configures the following GPIO settings:
  *                    - Pin mode
@@ -159,7 +159,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle) {
  *
  * @param[in]		- pGPIOx : Pointer to the GPIO peripheral register structure
  *
- * @return			- none
+ * @return			- None
  *
  * @note			- The GPIO peripheral is returned to its default reset state
  */
@@ -202,7 +202,7 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
  *
  * @return			- Current logic level of the pin (0 or 1)
  *
- * @note			- none
+ * @note			- None
  */
 uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
 {
@@ -266,7 +266,7 @@ void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Val
  * @param[in]		- pGPIOx : Pointer to the GPIO peripheral register structure
  * @param[in]		- Value : 16-bit value to be written to the GPIO output data register
  *
- * @return			- none
+ * @return			- None
  *
  * @note			- Each bit of Value corresponds to one GPIO pin:
  *                    bit0 -> Pin0, bit1 -> Pin1, ..., bit15 -> Pin15.
@@ -285,7 +285,7 @@ void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
  * @param[in]		- pGPIOx : Pointer to the GPIO peripheral register structure
  * @param[in]		- PinNumber : GPIO pin number
  *
- * @return			- none
+ * @return			- None
  *
  * @note			- The pin must be configured as an output or in an alternate function mode with output capability
  */
@@ -304,7 +304,7 @@ void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
  * @param[in]		- IRQPriority: Priority level 0-15 (0 = highest, 15 = lowest)
  * @param[in]		- EnorDi     : ENABLE or DISABLE
  *
- * @return			- none
+ * @return			- None
  *
  * @note			- Processor-side configuration (ARM Cortex-M4 NVIC registers)
  *                	  STM32F446xx implements 4 priority bits in upper nibble of IPR byte

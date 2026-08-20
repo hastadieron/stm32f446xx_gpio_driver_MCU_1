@@ -97,9 +97,9 @@
 /*****peripheral register definition structure*****/
 typedef struct
 {
-	volatile uint32_t MODER;		/* GPIO port mode register, Address offset 0x00 						*/
-	volatile uint32_t OTYPER;		/* GPIO port output type register, Address offset 0x04					*/
-	volatile uint32_t OSPEEDR;		/* GPIO port output speed register, Address offset 0x08  				*/
+	volatile uint32_t MODER;		/* GPIO port mode register, address offset 0x00 						*/
+	volatile uint32_t OTYPER;		/* GPIO port output type register, address offset 0x04					*/
+	volatile uint32_t OSPEEDR;		/* GPIO port output speed register, address offset 0x08  				*/
 	volatile uint32_t PUPDR;		/* GPIO port pull-up/pull-down register, address offset 0x0C 			*/
 	volatile uint32_t IDR;			/* GPIO port input data register, address offset 0x10					*/
 	volatile uint32_t ODR;			/* GPIO port output data register, address offset 0x14 					*/
@@ -109,27 +109,41 @@ typedef struct
 									/* AFR[1] GPIO alternate function high register, address offset 0x24	*/
 } GPIO_RegDef_t;
 
+/*****peripheral register definition structure for SPI*****/
+typedef struct
+{
+	volatile uint32_t CR1;			/* Control register 1, address offset 0x00								*/
+	volatile uint32_t CR2;			/* Control register 2, address offset 0x04								*/
+	volatile uint32_t SR;			/* Status register, address offset 0x08									*/
+	volatile uint32_t DR;			/* Data register, address offset 0x0C									*/
+	volatile uint32_t CRCPR;		/* CRC polynomial register, address offset 0x10							*/
+	volatile uint32_t RXCRCR;		/* RX CRC register, address offset 0x14									*/
+	volatile uint32_t TXCRCR;		/* TX CRC register, address offset 0x18									*/
+	volatile uint32_t I2SCFGR;		/* I2S configuration register, address offset 0x1C						*/
+	volatile uint32_t I2SPR;		/* Prescaler register, address offset 0x20								*/
+} SPI_RegDef_t;
+
 /*****peripheral register definition structure for EXTI*****/
 typedef struct
 {
-	volatile uint32_t IMR;			/* Interrupt mask register, Address offset 0x00							*/
-	volatile uint32_t EMR;			/* Event mask register, Address offset 0x04								*/
-	volatile uint32_t RTSR;			/* Rising edge trigger register, Address offset 0x08					*/
-	volatile uint32_t FTSR;			/* Falling edge trigger register, Address offset 0x0C					*/
-	volatile uint32_t SWIER;		/* Software interrupt register, Address offset 0x10						*/
-	volatile uint32_t PR;			/* Interrupt pending register, Address offset 0x14						*/
+	volatile uint32_t IMR;			/* Interrupt mask register, address offset 0x00							*/
+	volatile uint32_t EMR;			/* Event mask register, address offset 0x04								*/
+	volatile uint32_t RTSR;			/* Rising edge trigger register, address offset 0x08					*/
+	volatile uint32_t FTSR;			/* Falling edge trigger register, address offset 0x0C					*/
+	volatile uint32_t SWIER;		/* Software interrupt register, address offset 0x10						*/
+	volatile uint32_t PR;			/* Interrupt pending register, address offset 0x14						*/
 } EXTI_RegDef_t;
 
 /*****peripheral register definition structure for SYSCFG*****/
 typedef struct
 {
-    volatile uint32_t MEMRMP;		/* Memory remap register, Address offset: 0x00							*/
-    volatile uint32_t PMC;			/* Peripheral mode configuration register, Address offset: 0x04			*/
-    volatile uint32_t EXTICR[4];	/* EXTI configuration registers 1-4, Address offset: 0x08-0x14			*/
-    volatile uint32_t RESERVED1[2];	/* Reserved, Address offset: 0x18-0x1C									*/
-    volatile uint32_t CMPCR;		/* Compensation cell control register, Address offset: 0x20				*/
-    volatile uint32_t RESERVED2[2];	/* Reserved, Address offset: 0x24-0x28									*/
-    volatile uint32_t CFGR;			/* Configuration register, Address offset: 0x2C							*/
+    volatile uint32_t MEMRMP;		/* Memory remap register, address offset: 0x00							*/
+    volatile uint32_t PMC;			/* Peripheral mode configuration register, address offset: 0x04			*/
+    volatile uint32_t EXTICR[4];	/* EXTI configuration registers 1-4, address offset: 0x08-0x14			*/
+    volatile uint32_t RESERVED1[2];	/* Reserved, address offset: 0x18-0x1C									*/
+    volatile uint32_t CMPCR;		/* Compensation cell control register, address offset: 0x20				*/
+    volatile uint32_t RESERVED2[2];	/* Reserved, address offset: 0x24-0x28									*/
+    volatile uint32_t CFGR;			/* Configuration register, address offset: 0x2C							*/
 } SYSCFG_RegDef_t;
 
 /*****peripheral register definition structure for RCC*****/
@@ -188,10 +202,13 @@ typedef struct
 #define GPIOH ((GPIO_RegDef_t*) GPIOH_BASEADDR)
 
 #define RCC ((RCC_RegDef_t*) RCC_BASEADDR)
-
 #define EXTI ((EXTI_RegDef_t*) EXTI_BASEADDR)
-
 #define SYSCFG ((SYSCFG_RegDef_t*)SYSCFG_BASEADDR)
+
+#define SPI1 ((SPI_RegDef_t*)SPI1_BASEADDR)
+#define SPI2 ((SPI_RegDef_t*)SPI2_BASEADDR)
+#define SPI3 ((SPI_RegDef_t*)SPI3_BASEADDR)
+#define SPI4 ((SPI_RegDef_t*)SPI4_BASEADDR)
 
 /*
  * Clock Enable Macros for GPIOx peripherals
@@ -339,5 +356,7 @@ typedef struct
 #define GPIO_PIN_RESET	RESET
 
 #include "stm32f446xx_gpio_driver.h"
+#include "stm32f446xx_spi_driver.h"
+
 
 #endif /* INC_STM32F446XX_H_ */
