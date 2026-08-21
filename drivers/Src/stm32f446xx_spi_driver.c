@@ -40,4 +40,37 @@ void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnorDi) {
 	}
 }
 
+/************************************************************************************************
+ * @fn				- SPI_Init
+ *
+ * @brief			- Initializes the specified SPI with the given configuration
+ *
+ * @param[in]		- pSPIx : Pointer to the SPI ..................
+ *
+ * @return			- None
+ *
+ * @note			- TODO
+ */
+void SPI_Init(SPI_Handle_t *pSPIHandle)
+{
+	// Configure the SPI_CR1 register
+	uint32_t tempreg = 0;
+
+	// 1. Configure the device mode
+	tempreg |= pSPIHandle->SPIConfig.SPI_DeviceMode << 2;
+
+	// 2. Configure the bus config
+	if(pSPIHandle->SPIConfig.SPI_BusConfig == SPI_BUS_CONFIG_FD)
+	{
+		// BIDIMODE bit should be cleared
+	}else if(pSPIHandle->SPIConfig.SPI_BusConfig == SPI_BUS_CONFIG_HD)
+	{
+		// BIDIMODE bit should be set
+	}else if(pSPIHandle->SPIConfig.SPI_BusConfig == SPI_BUS_CONFIG_SIMPLEX_RXONLY)
+	{
+		// BIDIMODE bit should be cleared
+		// RXONLY bit must be set
+	}
+
+}
 
