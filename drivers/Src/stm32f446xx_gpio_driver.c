@@ -104,7 +104,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle) {
 
 		} else if (pGPIOHandle->GPIO_Pin_Config.GPIO_PinMode == GPIO_MODE_IT_RFT)
 		{
-			// 1. Configure both EXTI_FTSR and EXTI_FTSR
+			// 1. Configure both EXTI_FTSR and EXTI_RTSR
 			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber);
 			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_Pin_Config.GPIO_PinNumber);
 		}
