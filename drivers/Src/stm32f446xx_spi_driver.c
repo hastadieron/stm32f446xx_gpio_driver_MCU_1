@@ -51,9 +51,16 @@ void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnorDi) {
  *
  * @note			- This function configures the SPI_CR1 register according
  *                    to the settings specified in the SPI handle.
+ *                    SPI_PeriClockControl() must be called BEFORE this function to enable
+ *                    the peripheral clock. This function only configures CR1 — it does NOT
+ *                    set the SPE (SPI Enable) bit; SPE must be set separately before
+ *                    calling SPI_SendData().
  */
 void SPI_Init(SPI_Handle_t *pSPIHandle)
 {
+	// Peripheral clock enable
+	SPI_PeriClockControl(pSPIHandle->pSPIx, ENABLE);
+
 	// Configure the SPI_CR1 register
 	uint32_t tempreg = 0;
 
@@ -92,6 +99,19 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 	// 6. Configure the clock phase (CPHA)
 	tempreg |= pSPIHandle->SPIConfig.SPI_CPHA << SPI_CR1_CPHA;
 
+	// 7. Configure the software slave management (SSM)
+	if(pSPIHandle->SPIConfig.SPI_SSM == SPI_SSM_EN)
+	{
+		tempreg |= (1 << SPI_CR1_SSM);
+	// Force internal NSS high so the master never sees a Mode Fault (MODF),
+	// since the physical NSS pin is intentionally left unconfigured.
+		tempreg |= (1 << SPI_CR1_SSI);
+	}
+	else
+	{
+		tempreg &= ~(1 << SPI_CR1_SSM);
+	}
+
 	pSPIHandle->pSPIx->CR1 = tempreg;
 }
 
@@ -128,19 +148,107 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
 }
 
 /************************************************************************************************
+ * @fn				- SPI_Get_Flag_Status
+ *
+ * @brief			- Checks whether a given flag bit is set in the SPI_SR (Status Register)
+ *
+ * @param[in]		- pSPIx    : Pointer to the SPI peripheral register definition
+ * @param[in]		- FlagName : Bitmask of the flag to check (e.g. SPI_TXE_FLAG, SPI_RXNE_FLAG, SPI_BSY_FLAG)
+ *
+ * @return			- FLAG_SET (1) if the flag bit is set, FLAG_RESET (0) otherwise
+ *
+ * @note			- None
+ */
+uint8_t SPI_Get_Flag_Status(SPI_RegDef_t *pSPIx, uint8_t FlagName)
+{
+	if(pSPIx->SR & FlagName)
+	{
+		return FLAG_SET;
+	}
+	return FLAG_RESET;
+}
+
+/************************************************************************************************
  * @fn				- SPI_SendData
  *
- * @brief			-
+ * @brief			- Sends data over SPI in blocking (polling) mode. The function does not
+ *                    return until the entire buffer has been loaded into the Tx buffer.
  *
- * @param[in]		- pSPIx : Pointer to the SPI peripheral register definition
- * @param[in]		- pTxBuffer : Pointer to ........
- * @param[in]		- Len :  ........
+ * @param[in]		- pSPIx      : Pointer to the SPI peripheral register definition
+ * @param[in]		- pTxBuffer  : Pointer to the user data buffer (in SRAM) to be transmitted
+ * @param[in]		- Len        : Number of bytes to transmit
  *
  * @return			- None
  *
- * @note			- This function resets the SPI peripheral to its default reset state.
+ * @note			- This is a BLOCKING call (polling-based). It busy-waits on the TXE flag
+ *                    before every write to DR and consumes CPU cycles the entire time.
+ *                    Do not call from an ISR with tight timing constraints.
  */
 void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
 {
-	//
+	while(Len>0)
+	{
+		// 1. Wait until TXE is empty
+		while(SPI_Get_Flag_Status(pSPIx, SPI_TXE_FLAG) == FLAG_RESET);
+
+		// 2. Check the DFF bit in CR1
+		if((pSPIx->CR1 & (1 << SPI_CR1_DFF)))
+		{
+			// 16-bit DFF
+			// Load the data in DR
+			pSPIx->DR = *((uint16_t*)pTxBuffer);
+			Len--;
+			Len--;
+			pTxBuffer += 2;
+		}else{
+			// 8-bit DFF
+			pSPIx->DR = *pTxBuffer;
+			Len--;
+			pTxBuffer++;
+		}
+	}
 }
+
+
+/************************************************************************************************
+ * @fn				- SPI_ReceiveData
+ *
+ * @brief			- Receive data.............
+ *
+ * @param[in]		- ............
+ *
+ *
+ * @return			- None
+ *
+ * @note			- .........
+ */
+
+//void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
+
+
+
+/************************************************************************************************
+ * @fn				- SPI_PeripheralControl
+ *
+ * @brief			- .............
+ *
+ * @param[in]		- ............
+ *
+ *
+ * @return			- None
+ *
+ * @note			- .........
+ */
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi)
+{
+	if(EnOrDi == ENABLE)
+	{
+		pSPIx->CR1 |=  (1 << SPI_CR1_SPE);
+	}else{
+		pSPIx->CR1 &= ~(1 << SPI_CR1_SPE);
+	}
+}
+
+
+
+

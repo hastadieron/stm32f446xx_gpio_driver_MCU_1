@@ -356,12 +356,14 @@ typedef struct
 #define NVIC_IRQ_PRI15		15U
 
 // some generic macros
-#define ENABLE			1
-#define DISABLE			0
-#define SET				ENABLE
-#define RESET			DISABLE
-#define GPIO_PIN_SET	SET
-#define GPIO_PIN_RESET	RESET
+#define ENABLE				1
+#define DISABLE				0
+#define SET					ENABLE
+#define RESET				DISABLE
+#define GPIO_PIN_SET		SET
+#define GPIO_PIN_RESET		RESET
+#define FLAG_SET			SET
+#define FLAG_RESET			RESET
 
 /**********************************************************************************
  * Bit position definitions of SPI peripheral
