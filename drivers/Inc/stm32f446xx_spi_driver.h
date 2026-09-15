@@ -121,5 +121,8 @@ void SPI_IRQHandling(SPI_Handle_t *pHandle);
  * Other peripheral control APIs
  */
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
 
 #endif /* INC_STM32F446XX_SPI_DRIVER_H_ */

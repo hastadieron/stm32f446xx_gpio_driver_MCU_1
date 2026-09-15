@@ -195,7 +195,6 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
 		GPIOH_REG_RESET(); }
 }
 
-
 /**************************************************************************************
  * @fn				- GPIO_ReadFromInputPin
  *
@@ -214,7 +213,6 @@ uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
 	value = (uint8_t)((pGPIOx->IDR >> PinNumber) & 1U);
 	return value;
 }
-
 
 /**************************************************************************************
  * @fn				- GPIO_ReadFromInputPort

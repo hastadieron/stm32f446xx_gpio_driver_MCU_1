@@ -148,7 +148,56 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
 }
 
 /************************************************************************************************
- * @fn				- SPI_Get_Flag_Status
+ * @fn				- SPI_SSIConfig
+ *
+ * @brief			- Configures the internal NSS level when software slave management is enabled
+ *
+ * @param[in]		- pSPIx : Pointer to the SPI peripheral register definition
+ * @param[in]		- EnOrDi : ENABLE sets the SSI bit; DISABLE clears the SSI bit
+ *
+ * @return			- None
+ *
+ * @note			- SSI is used only when SSM = 1. It controls the internal NSS
+ *                	  signal seen by the SPI peripheral and does not control the
+ *                	  physical NSS GPIO pin.
+ */
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi)
+{
+	if(EnOrDi == ENABLE)
+	{
+		pSPIx->CR1 |= (1 << SPI_CR1_SSI);
+	}else{
+		pSPIx->CR1 &= ~(1 << SPI_CR1_SSI);
+	}
+}
+
+/************************************************************************************************
+ * @fn				- SPI_SSOEConfig
+ *
+ * @brief			- Enables or disables the hardware NSS output in Master mode
+ *
+ * @param[in]		- pSPIx : Pointer to the SPI peripheral register definition
+ * @param[in]		- EnOrDi : ENABLE sets the SSOE bit; DISABLE clears the SSOE bit
+ *
+ * @return			- None
+ *
+ * @note			- SSOE controls the NSS output when the SPI peripheral operates
+ *                	  in Master mode with hardware NSS management. When SSOE = 1,
+ *                	  enabling SPI (SPE = 1) drives the NSS output low, and disabling
+ *                	  SPI (SPE = 0) releases the NSS output high.
+ */
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi)
+{
+	if(EnOrDi == ENABLE)
+	{
+		pSPIx->CR2 |= (1 << SPI_CR2_SSOE);
+	}else{
+		pSPIx->CR2 &= ~(1 << SPI_CR2_SSOE);
+	}
+}
+
+/************************************************************************************************
+ * @fn				- SPI_GetFlagStatus
  *
  * @brief			- Checks whether a given flag bit is set in the SPI_SR (Status Register)
  *
@@ -159,7 +208,7 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
  *
  * @note			- None
  */
-uint8_t SPI_Get_Flag_Status(SPI_RegDef_t *pSPIx, uint8_t FlagName)
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName)
 {
 	if(pSPIx->SR & FlagName)
 	{
