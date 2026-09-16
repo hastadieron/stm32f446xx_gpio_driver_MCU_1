@@ -103,7 +103,7 @@ int main(void)
 	SPI_SendData(SPI2, (uint8_t*)user_data, strlen(user_data));
 
 	// Wait until SPI transmission is complete
-	while (SPI_GetFlagStatus(SPI2, SPI_BSY_FLAG));
+	while (SPI_GetFlagStatus(SPI2, SPI_BUSY_FLAG));
 
 	// Disable SPI2; hardware NSS goes HIGH
 	SPI_PeripheralControl(SPI2, DISABLE);

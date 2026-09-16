@@ -218,86 +218,116 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName)
 }
 
 /************************************************************************************************
- * @fn				- SPI_SendData
+ * @fn          - SPI_SendData
  *
- * @brief			- Sends data over SPI in blocking (polling) mode. The function does not
- *                    return until the entire buffer has been loaded into the Tx buffer.
+ * @brief       - Sends data over SPI in blocking (polling) mode. The function
+ *                does not return until all requested data has been written
+ *                to the SPI data register.
  *
- * @param[in]		- pSPIx      : Pointer to the SPI peripheral register definition
- * @param[in]		- pTxBuffer  : Pointer to the user data buffer (in SRAM) to be transmitted
- * @param[in]		- Len        : Number of bytes to transmit
+ * @param[in]   - pSPIx     : Pointer to the SPI peripheral register definition
+ * @param[in]   - pTxBuffer : Pointer to the user data buffer (in SRAM) to be transmitted
+ * @param[in]   - Len       : Number of bytes to transmit
  *
- * @return			- None
+ * @return      - None
  *
- * @note			- This is a BLOCKING call (polling-based). It busy-waits on the TXE flag
- *                    before every write to DR and consumes CPU cycles the entire time.
- *                    Do not call from an ISR with tight timing constraints.
+ * @note        - This is a blocking call (polling-based). It busy-waits on the
+ *                TXE flag before every write to DR.
+ *                The function does not wait for BSY = 0.
+ *                In 16-bit DFF mode, Len must be a multiple of 2.
  */
 void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
 {
-	while(Len>0)
-	{
-		// 1. Wait until TXE is empty
-		while(SPI_Get_Flag_Status(pSPIx, SPI_TXE_FLAG) == FLAG_RESET);
+    while (Len > 0)
+    {
+        // Wait until the Tx buffer is empty (TXE = 1)
+        while (SPI_GetFlagStatus(pSPIx, SPI_TXE_FLAG) == FLAG_RESET);
 
-		// 2. Check the DFF bit in CR1
-		if((pSPIx->CR1 & (1 << SPI_CR1_DFF)))
-		{
-			// 16-bit DFF
-			// Load the data in DR
-			pSPIx->DR = *((uint16_t*)pTxBuffer);
-			Len--;
-			Len--;
-			pTxBuffer += 2;
-		}else{
-			// 8-bit DFF
-			pSPIx->DR = *pTxBuffer;
-			Len--;
-			pTxBuffer++;
-		}
-	}
+        // Check the DFF bit in CR1
+        if (pSPIx->CR1 & (1 << SPI_CR1_DFF))
+        {
+            // Write 16 bits from the Tx buffer to DR
+            pSPIx->DR = *((uint16_t*)pTxBuffer);
+
+            Len -= 2;
+            pTxBuffer += 2;
+        }
+        else
+        {
+            // Write 8 bits from the Tx buffer to DR
+            pSPIx->DR = *pTxBuffer;
+
+            Len--;
+            pTxBuffer++;
+        }
+    }
 }
 
-
 /************************************************************************************************
- * @fn				- SPI_ReceiveData
+ * @fn          - SPI_ReceiveData
  *
- * @brief			- Receive data.............
+ * @brief       - Receives data over SPI in blocking (polling) mode. The function
+ *                does not return until the requested number of bytes has been
+ *                read from the SPI receive buffer.
  *
- * @param[in]		- ............
+ * @param[in]   - pSPIx     : Pointer to the SPI peripheral register definition
+ * @param[out]  - pRxBuffer : Pointer to the user buffer (in SRAM) where received data is stored
+ * @param[in]   - Len       : Number of bytes to receive
  *
+ * @return      - None
  *
- * @return			- None
- *
- * @note			- .........
+ * @note        - This is a blocking call (polling-based). It busy-waits on the
+ *                RXNE flag until received data is available.
+ *                In 16-bit DFF mode, Len must be a multiple of 2.
  */
+void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t Len)
+{
+    while (Len > 0)
+    {
+        // Wait until the Rx buffer is not empty (RXNE = 1)
+        while (SPI_GetFlagStatus(pSPIx, SPI_RXNE_FLAG) == FLAG_RESET);
 
-//void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
+        // Check the DFF bit in CR1
+        if (pSPIx->CR1 & (1 << SPI_CR1_DFF))
+        {
+            // Read 16 bits from DR into the Rx buffer
+            *((uint16_t*)pRxBuffer) = pSPIx->DR;
 
+            Len -= 2;
+            pRxBuffer += 2;
+        }
+        else
+        {
+            // Read 8 bits from DR into the Rx buffer
+            *pRxBuffer = pSPIx->DR;
 
+            Len--;
+            pRxBuffer++;
+        }
+    }
+}
 
 /************************************************************************************************
- * @fn				- SPI_PeripheralControl
+ * @fn          - SPI_PeripheralControl
  *
- * @brief			- .............
+ * @brief       - Enables or disables the SPI peripheral
  *
- * @param[in]		- ............
+ * @param[in]   - pSPIx  : Pointer to the SPI peripheral register definition
+ * @param[in]   - EnOrDi : ENABLE sets the SPE bit; DISABLE clears the SPE bit
  *
+ * @return      - None
  *
- * @return			- None
- *
- * @note			- .........
+ * @note        - This function controls the SPE bit in SPI_CR1.
+ *                Before disabling SPI, ensure that the current transmission
+ *                is complete (BSY = 0).
  */
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi)
 {
-	if(EnOrDi == ENABLE)
-	{
-		pSPIx->CR1 |=  (1 << SPI_CR1_SPE);
-	}else{
-		pSPIx->CR1 &= ~(1 << SPI_CR1_SPE);
-	}
+    if (EnOrDi == ENABLE)
+    {
+        pSPIx->CR1 |= (1 << SPI_CR1_SPE);
+    }
+    else
+    {
+        pSPIx->CR1 &= ~(1 << SPI_CR1_SPE);
+    }
 }
-
-
-
-
