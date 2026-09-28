@@ -153,7 +153,7 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
  * @brief			- Checks whether a given flag bit is set in the SPI_SR (Status Register)
  *
  * @param[in]		- pSPIx    : Pointer to the SPI peripheral register definition
- * @param[in]		- FlagName : Bitmask of the flag to check (e.g. SPI_TXE_FLAG, SPI_RXNE_FLAG, SPI_BSY_FLAG)
+ * @param[in]		- FlagName : Bitmask of the flag to check (e.g. SPI_TXE_FLAG, SPI_RXNE_FLAG, SPI_BUSY_FLAG)
  *
  * @return			- FLAG_SET (1) if the flag bit is set, FLAG_RESET (0) otherwise
  *
@@ -209,7 +209,6 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
 	}
 }
 
-
 /************************************************************************************************
  * @fn				- SPI_ReceiveData
  *
@@ -223,8 +222,8 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
  * @note			- .........
  */
 
-//void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
-
+//void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len) {}
+// TODO realize function and write documentation!
 
 
 /************************************************************************************************
@@ -249,6 +248,27 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi)
 	}
 }
 
-
-
-
+/************************************************************************************************
+ * @fn          - SPI_SSOEConfig
+ *
+ * @brief       - Enables or disables the hardware NSS output in Master mode
+ *
+ * @param[in]   - pSPIx  : Pointer to the SPI peripheral register definition
+ * @param[in]   - EnOrDi : ENABLE sets the SSOE bit; DISABLE clears the SSOE bit
+ *
+ * @return      - None
+ *
+ * @note        - This function controls the SSOE bit in SPI_CR2.
+ *                It is used for hardware NSS output management in Master mode.
+ */
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi)
+{
+    if (EnOrDi == ENABLE)
+    {
+        pSPIx->CR2 |= (1 << SPI_CR2_SSOE);
+    }
+    else
+    {
+        pSPIx->CR2 &= ~(1 << SPI_CR2_SSOE);
+    }
+}
