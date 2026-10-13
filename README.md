@@ -1,87 +1,33 @@
 # STM32F446RE Bare-Metal Drivers
 
-Bare-Metal Embedded C drivers and practical examples for the **STM32F446RE** microcontroller based on the ARM Cortex-M4 core.
+Навчальний проєкт із розробки низькорівневих драйверів периферії мікроконтролера **STM32F446RE** мовою C. Основна мета — вивчення архітектури STM32, принципів роботи периферійних модулів і безпосереднього керування апаратними Registers без використання HAL/LL.
 
-This repository documents my hands-on work with STM32 peripherals, register-level programming, and low-level driver development. It includes custom GPIO and SPI driver implementations, along with standalone examples that demonstrate peripheral configuration and interaction with external hardware.
+Проєкт розвивається від базових експериментів із GPIO до реалізації власних драйверів і обміну даними через SPI. Він також використовується для практичного закріплення знань, отриманих під час курсу *Mastering Microcontroller and Embedded Driver Development (MCU_1)*.
 
-The project is developed as part of my Embedded Systems learning path, with an emphasis on understanding how MCU hardware, peripheral registers, and Embedded C firmware work together.
+## Особливості проєкту
 
-## Project Goals
+- **Bare-Metal C:** безпосередня робота з Registers мікроконтролера.
+- **Власний GPIO driver:** окремі Header і Source файли для конфігурації та керування GPIO.
+- **Власний SPI driver:** реалізація драйвера SPI та навчальні приклади його використання.
+- **GPIO Input/Output:** експерименти з керуванням LED і зчитуванням стану Push Button.
+- **Interrupt:** окремий приклад керування LED за допомогою переривань.
+- **SPI communication:** експерименти з передаванням даних і протоколом Command–Response між STM32 та Arduino.
+- **Апаратні експерименти:** перевірка підключень і робота з логічним аналізатором та іншими вимірювальними інструментами.
 
-- Understand STM32 peripheral operation at the register level.
-- Develop reusable Bare-Metal drivers in Embedded C.
-- Configure and control GPIO without relying on the STM32 HAL.
-- Explore SPI configuration and data transmission.
-- Connect peripheral behavior to the STM32 Reference Manual.
-- Validate firmware behavior through practical hardware experiments.
-- Build a structured Embedded C portfolio.
+## Апаратне забезпечення
 
-## Target Platform
+- **MCU:** STM32F446RE, ARM Cortex-M4.
+- **Development environment:** STM32CubeIDE.
+- **Programming language:** Embedded C.
+- **Logic analyzer:** Kingst LA2016.
+- **Additional hardware:** Arduino Uno, TXS0108E logic level converter, LEDs, Push Buttons, breadboard і jumper wires.
 
-| Component | Details |
-|---|---|
-| Microcontroller | STM32F446RE |
-| MCU family | STM32F4 |
-| CPU core | ARM Cortex-M4 |
-| Programming language | Embedded C |
-| Development environment | STM32CubeIDE |
-| Build toolchain | GNU Arm Embedded Toolchain |
-| Programming approach | Bare-Metal, register-level peripheral control |
-
-## Implemented Drivers
-
-### GPIO Driver
-
-Source files:
-
-- `drivers/Inc/stm32f446xx_gpio_driver.h`
-- `drivers/Src/stm32f446xx_gpio_driver.c`
-
-The GPIO driver provides a foundation for working with General-Purpose Input/Output peripherals through a custom driver interface.
-
-The associated examples explore LED control, button input, and interrupt-driven GPIO operation.
-
-Topics covered include:
-
-- GPIO peripheral clock configuration.
-- GPIO pin configuration and operating modes.
-- Input and output operations.
-- Pull-up and pull-down configuration.
-- External interrupt-related experiments.
-
-### SPI Driver
-
-Source files:
-
-- `drivers/Inc/stm32f446xx_spi_driver.h`
-- `drivers/Src/stm32f446xx_spi_driver.c`
-
-The SPI driver provides a foundation for configuring and using the STM32 SPI peripheral.
-
-The examples explore SPI initialization, data transmission, and communication with an external SPI device.
-
-Topics covered by the project include:
-
-- SPI peripheral configuration.
-- Master-mode transmission experiments.
-- SPI communication with an Arduino Uno.
-- Command-response communication experiments.
-- Practical investigation of SPI signals and transfer behavior.
-
-The exact feature set and implementation status of individual driver functions should be verified against the current source code.
-
-## Repository Structure
+## Структура репозиторію
 
 ```text
 stm32f446xx_drivers/
-├── drivers/
-│   ├── Inc/
-│   │   ├── stm32f446xx.h
-│   │   ├── stm32f446xx_gpio_driver.h
-│   │   └── stm32f446xx_spi_driver.h
-│   └── Src/
-│       ├── stm32f446xx_gpio_driver.c
-│       └── stm32f446xx_spi_driver.c
+├── Startup/
+│   └── startup_stm32f446retx.s
 ├── Src/
 │   ├── 000_TXS0108E_testing.c
 │   ├── 001led_toggle.c
@@ -90,81 +36,76 @@ stm32f446xx_drivers/
 │   ├── 004led_btn_interrupt.c
 │   ├── 005spi_tx_testing.c
 │   ├── 006spi_tx_only_arduino.c
-│   └── 007spi_cmd_response_arduino.c
-├── Startup/
-│   └── startup_stm32f446retx.s
+│   ├── 007spi_cmd_response_arduino.c
+│   ├── syscalls.c
+│   └── sysmem.c
+├── drivers/
+│   ├── Inc/
+│   │   ├── stm32f446xx.h
+│   │   ├── stm32f446xx_gpio_driver.h
+│   │   └── stm32f446xx_spi_driver.h
+│   └── Src/
+│       ├── stm32f446xx_gpio_driver.c
+│       └── stm32f446xx_spi_driver.c
 ├── STM32F446RETX_FLASH.ld
 ├── STM32F446RETX_RAM.ld
+├── .cproject
+├── .project
 └── stm32f446xx_gpio_driver_MCU_1.launch
 ```
 
-### Directory Overview
+## Навчальні приклади
 
-- **`drivers/Inc/`** — driver and MCU-related header files.
-- **`drivers/Src/`** — driver implementation files.
-- **`Src/`** — standalone firmware examples and hardware experiments.
-- **`Startup/`** — startup assembly code.
-- **Linker scripts** — memory layout definitions for FLASH and RAM.
-- **STM32CubeIDE project files** — development environment configuration.
-
-## Examples
-
-| Source file | Purpose |
+| Файл | Призначення |
 |---|---|
-| `000_TXS0108E_testing.c` | Logic-level converter testing |
-| `001led_toggle.c` | LED control and GPIO output |
-| `002Led_btn.c` | LED and button interaction |
-| `003led_btn_ext.c` | GPIO and external-interrupt-related experiment |
-| `004led_btn_interrupt.c` | Interrupt-driven button and LED experiment |
-| `005spi_tx_testing.c` | SPI transmission experiment |
-| `006spi_tx_only_arduino.c` | SPI Master transmission to Arduino |
-| `007spi_cmd_response_arduino.c` | SPI command-response communication experiment |
+| `000_TXS0108E_testing.c` | Експерименти з TXS0108E logic level converter |
+| `001led_toggle.c` | Базове керування LED через GPIO |
+| `002Led_btn.c` | Зчитування стану Push Button і керування LED |
+| `003led_btn_ext.c` | Розширений приклад роботи з LED і Push Button |
+| `004led_btn_interrupt.c` | Керування LED із використанням Interrupt |
+| `005spi_tx_testing.c` | Початкові експерименти з передаванням даних через SPI |
+| `006spi_tx_only_arduino.c` | SPI Master і передавання даних до Arduino |
+| `007spi_cmd_response_arduino.c` | Обмін Command–Response між STM32 та Arduino через SPI Full Duplex |
 
-These files represent separate experiments rather than a single application. The active example and its build configuration determine which firmware is compiled.
+Назви файлів відображають навчальну послідовність. Конкретні можливості кожного прикладу визначаються його реалізацією.
 
-## Hardware
+## Архітектура драйверів
 
-The project targets the STM32F446RE microcontroller. Practical experiments may also use:
+Драйвери розділено на Header-файли в `drivers/Inc/` і реалізації в `drivers/Src/`.
 
-- Nucleo-F446RE development board.
-- Arduino Uno configured as an SPI Slave.
-- TXS0108E logic-level translator.
-- LEDs, push buttons, resistors, and jumper wires.
-- Logic analyzer for inspecting digital signals.
+- `stm32f446xx.h` — визначення, пов'язані з апаратними Registers STM32F446xx.
+- `stm32f446xx_gpio_driver.h` — інтерфейс GPIO driver.
+- `stm32f446xx_gpio_driver.c` — реалізація GPIO driver.
+- `stm32f446xx_spi_driver.h` — інтерфейс SPI driver.
+- `stm32f446xx_spi_driver.c` — реалізація SPI driver.
 
-For the STM32-to-Arduino SPI experiments, the intended setup uses the STM32 as SPI Master and the Arduino Uno as SPI Slave. The electrical interface and signal wiring must match the configuration used by the corresponding firmware.
+Такий поділ відокремлює інтерфейс драйвера від його реалізації та дозволяє використовувати драйвери в різних навчальних прикладах.
 
-## Development Environment
+## SPI: STM32 Master — Arduino Slave
 
-The project is maintained in STM32CubeIDE and uses the GNU Arm toolchain. STM32CubeIDE provides the build, debug, and flashing workflow; the peripheral driver code is developed to explore direct hardware control rather than hiding peripheral configuration behind HAL APIs.
+Окремий напрям проєкту — дослідження SPI Full Duplex та реалізація обміну командами й відповідями між STM32F446RE та Arduino Uno.
 
-## Build and Run
+Основні теми експериментів:
 
-1. Clone or download the repository.
-2. Open the project in STM32CubeIDE.
-3. Select the standalone example you want to build.
-4. Check the source files included in the build configuration, especially if multiple examples define `main()`.
-5. Build the project.
-6. Connect the STM32F446RE board and flash the firmware.
-7. Connect any external hardware according to the selected example.
-8. Observe the behavior using the board, a multimeter, or a logic analyzer as appropriate.
+- налаштування SPI Master і SPI Slave;
+- конфігурація SPI Registers;
+- передавання та приймання даних через MOSI і MISO;
+- робота SCLK і NSS;
+- взаємодія TX buffer, RX buffer і Shift Register;
+- реалізація протоколу Command–Response;
+- перевірка часових параметрів сигналів за допомогою логічного аналізатора.
 
-Before running an example, verify its pin assignments, clock configuration, peripheral settings, and external wiring. Do not assume that every example uses the same hardware connections.
+Для підключення між платами використовується TXS0108E logic level converter. Конкретні параметри SPI та результати вимірювання сигналів документуються відповідно до фактичних експериментів.
 
-## Documentation and Learning Resources
+## Середовище розробки
 
-The primary technical references for this project are:
+Проєкт організовано для роботи у STM32CubeIDE. Репозиторій містить файли проєкту IDE, startup-код і linker scripts для STM32F446RETX.
 
-- **STM32F446RE Reference Manual (RM0390)** — peripheral architecture, registers, and operating modes.
-- **STM32F446RE Datasheet (DS10693)** — electrical characteristics, pin assignments, and device specifications.
-- **ARM Cortex-M4 Programming Manual (PM0214)** — core programming model and processor-specific behavior.
-- **STM32 Nucleo-64 Boards User Manual (UM1724)** — development board information.
+Для відтворення експериментів потрібно відкрити проєкт у STM32CubeIDE, перевірити конфігурацію build environment і апаратні підключення, після чого зібрати та завантажити відповідний приклад у MCU.
 
-The driver implementations and examples are intended to be studied alongside the relevant reference-manual sections.
+## Мета проєкту
 
-## Current Status
+Мета — послідовно перейти від розуміння апаратної архітектури STM32 до самостійної реалізації та перевірки драйверів периферії.
 
-This is an evolving Embedded C learning and portfolio project. Driver functionality, examples, documentation, and validation will be expanded incrementally.
-
-The presence of a driver or example in the repository does not by itself imply complete peripheral coverage, exhaustive testing, or production readiness.
+Проєкт охоплює шлях від налаштування окремих GPIO Registers до організації обміну даними між мікроконтролерами через SPI. Надалі документація, приклади, результати тестування та структура драйверів розвиватимуться разом із проєктом.
 
