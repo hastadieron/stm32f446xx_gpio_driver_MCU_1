@@ -113,7 +113,7 @@ void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t Len);
 /*
  * SPI status flags
  */
-uint8_t SPI_Get_Flag_Status(SPI_RegDef_t *pSPIx, uint8_t FlagName);
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
 
 /*
  * IRQ Configuration and ISR handling
@@ -128,6 +128,5 @@ void SPI_IRQHandling(SPI_Handle_t *pHandle);
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
 void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
 void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
-uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
 
 #endif /* INC_STM32F446XX_SPI_DRIVER_H_ */
